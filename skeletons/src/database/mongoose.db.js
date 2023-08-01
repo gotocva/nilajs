@@ -2,6 +2,7 @@
 
 import mongoose from 'mongoose';
 import { dbConfig } from '@config/db.config';
+import { LOG } from '@log/index';
 
 /**
  * @author sivabharathy
@@ -14,18 +15,18 @@ export const connectDB = () => {
     
     // when successfully connected
     mongoose.connection.on('connected', () => {
-        console.log('Mongodb successfully connected');
+        LOG.info('Mongodb successfully connected');
     });
 
     // if the connection throws an error
     mongoose.connection.on("error", (err) => {
         // if you get error for the first time when this gets started make sure to run mongodb
-        console.log('Mongodb connection failed', err);
+        LOG.info('Mongodb connection failed', err);
     });
     
     // when the connection is disconnected
     mongoose.connection.on("disconnected", () => {
-        console.log('Mongodb disconnected');
+        LOG.error('Mongodb disconnected');
     });
 
     return mongoose.connection;

@@ -25,5 +25,7 @@ export const appConfig = {
 
     API_RATE_LIMIT_TIME : 15, // 15 minutes
     API_RATE_LIMIT : 100, // 100 requests for every 15 minutes
+
+    LOG_DIRECTORY: 'logs',
 }
 

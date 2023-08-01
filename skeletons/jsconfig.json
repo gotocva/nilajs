@@ -12,6 +12,7 @@
             "@route/*": ["src/routes/*"],
             "@util/*": ["src/utils/*"],
             "@validator/*": ["src/validators/*"],
+            "@log/*": ["src/logger/*"],
         }
     },
     "exclude": ["node_modules", "dist"]

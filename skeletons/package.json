@@ -1,5 +1,5 @@
 {
-  "name": "express-rest-boilerplate",
+  "name": "{NAME}",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "lint": "eslint src"
   },
   "keywords": [],
-  "author": "something",
+  "author": "sivabharathy",
   "license": "MIT",
   "_moduleAliases": {
     "@root": ".",
@@ -21,6 +21,7 @@
     "@middleware": "dist/middlewares",
     "@model": "dist/models",
     "@route": "dist/routes",
+    "@log": "dist/logger",
     "@util": "dist/utils",
     "@validator": "dist/validators"
   },
@@ -35,6 +36,7 @@
     "module-alias": "^2.2.3",
     "moment": "^2.29.4",
     "mongoose": "^7.3.1",
+    "nila-logger": "^1.0.2",
     "node-telegram-bot-api": "^0.61.0",
     "nodemailer": "^6.9.3",
     "socket.io": "^4.7.0",
