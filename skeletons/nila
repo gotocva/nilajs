@@ -1,0 +1,228 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const { Command } = require("commander");
+const program = new Command();
+
+program.name("nila").description("CLI to create files with sample codes").version("0.0.1")
+
+const authorName = require('./package.json').author;
+
+function replacePlaceholders(content, replacements) {
+    // Replace each placeholder with its corresponding value
+    for (const [placeholder, value] of Object.entries(replacements)) {
+      const regex = new RegExp(`{${placeholder}}`, 'g');
+      content = content.replace(regex, value);
+    }
+    return content;
+}
+
+program
+.command("create:controller")
+.description("Generate a new controller")
+.argument("<controllerName>", "Controller Name")
+.action(async (controllerName) => {
+    // 
+    const firstCaps = controllerName.charAt(0).toUpperCase() + controllerName.slice(1);
+
+    const replacements = {
+        NAME: controllerName.toLowerCase(),
+        CAPSNAME: firstCaps
+    }
+
+    // Perform replacements
+    const replacedData = replacePlaceholders(sampleController, replacements);
+
+    // Write the new file
+    fs.writeFile(`${process.cwd()}/src/controllers/${controllerName}.controller.js`, replacedData, 'utf8', (err) => {
+    if (err) {
+        console.error('Error generating new controller:', err);
+        return;
+    }
+    console.log(`\x1b[36mcreated\x1b[0m : src/controllers/${controllerName}.controller.js`);
+    });
+})
+
+program
+.command("create:model")
+.description("Generate a new model")
+.argument("<modelname>", "Model Name")
+.action(async (modelname) => {
+    // 
+    const firstCaps = modelname.charAt(0).toUpperCase() + modelname.slice(1);
+
+    const replacements = {
+        NAME: modelname.toLowerCase(),
+        CAPSNAME: firstCaps
+    }
+
+    // Perform replacements
+    const replacedData = replacePlaceholders(sampleModel, replacements);
+
+    // Write the new file
+    fs.writeFile(`${process.cwd()}/src/models/${modelname}.model.js`, replacedData, 'utf8', (err) => {
+    if (err) {
+        console.error('Error generating new Model:', err);
+        return;
+    }
+    console.log(`\x1b[36mcreated\x1b[0m : src/models/${modelname}.model.js`);
+    });
+})
+
+
+
+
+
+const sampleController = `
+import * as {CAPSNAME} from "@model/{NAME}.model";
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const store = async (req, res) => {
+
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const list = async (req, res) => {
+
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const getOne = async (req, res) => {
+
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const update = async (req, res) => {
+
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const deleteOne = async (req, res) => {
+
+}
+
+`;
+
+
+const sampleModel = `
+import mongoose from 'mongoose';
+
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+
+/**
+ * {CAPSNAME} Schema
+ * @created_at ${ new Date() }
+ * @description {CAPSNAME} model
+ */
+const schema = new Schema({
+
+    name: {
+        type: String,
+        required: [true, 'name must not be empty'],
+    },
+}, { timestamps: false, versionKey: false });
+
+schema.post('init', function(doc) {
+    // it is called while accessing the data from DB example: find()
+    // console.log('%s has been initialized from the db', doc._id);
+});
+
+schema.post('validate', function(doc) {
+    // This middleware is called while inserting records 1st
+    // console.log('%s has been validated (but not saved yet)', doc._id);
+});
+
+schema.pre('save', () => {
+    // This middleware is called while inserting records 2nd
+    // console.log('Hello from pre save')
+});
+
+schema.post('save', function(doc) {
+    // This middleware is called while inserting records 3rd
+    // console.log('%s has been saved', doc._id);
+});
+
+schema.post('remove', function(doc) {
+    // console.log('%s has been removed', doc._id);
+});
+
+export const {CAPSNAME} = mongoose.model('{CAPSNAME}', schema);
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * 
+ * @param {*} data 
+ * @returns 
+ */
+export const store = (data) => {
+    return new Promise(async (resolve, reject) => {
+        const obj = new {CAPSNAME}(data);
+        const {NAME} = await obj.save();
+        resolve({NAME});
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @returns 
+ */
+export const list = () => {
+    return new Promise(async (resolve, reject) => {
+        const ignoreColoumns = {
+            // auth_token: false
+        }
+        const {NAME} = await {CAPSNAME}.find({}, ignoreColoumns);
+        resolve({NAME});
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const getById = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        const user = await User.findOne({_id: _id});
+        resolve(user);
+    })
+}`
+
+program.parse(process.argv)

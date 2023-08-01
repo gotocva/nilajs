@@ -1,0 +1,55 @@
+{
+  "name": "express-rest-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "npm run build && npx jest --forceExit",
+    "lint": "eslint src"
+  },
+  "keywords": [],
+  "author": "something",
+  "license": "MIT",
+  "_moduleAliases": {
+    "@root": ".",
+    "@src": "dist",
+    "@config": "dist/config",
+    "@controller": "dist/controllers",
+    "@middleware": "dist/middlewares",
+    "@model": "dist/models",
+    "@route": "dist/routes",
+    "@util": "dist/utils",
+    "@validator": "dist/validators"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "easy-alias": "^1.0.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "helmet": "^7.0.0",
+    "joi": "^17.9.2",
+    "module-alias": "^2.2.3",
+    "moment": "^2.29.4",
+    "mongoose": "^7.3.1",
+    "node-telegram-bot-api": "^0.61.0",
+    "nodemailer": "^6.9.3",
+    "socket.io": "^4.7.0",
+    "ssh2": "^1.14.0",
+    "ws": "^8.13.0",
+    "xss": "^1.0.14"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.5",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "eslint": "^8.43.0",
+    "eslint-plugin-es": "^4.1.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
+  }
+}

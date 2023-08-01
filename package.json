@@ -1,0 +1,23 @@
+{
+  "name": "nilajs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": false,
+  "scripts": {
+    "publish:local": "npm link",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "nila": "index.js"
+  },
+  "keywords": [],
+  "author": "sivabharathy",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "commander": "^9.4.0"
+  }
+}

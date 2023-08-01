@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "module": "commonjs",
+        "target": "es2017",
+        "allowSyntheticDefaultImports": false,
+        "paths": {
+            "@config/*": ["src/config/*"],
+            "@controller/*": ["src/controllers/*"],
+            "@middleware/*": ["src/middlewares/*"],
+            "@model/*": ["src/models/*"],
+            "@route/*": ["src/routes/*"],
+            "@util/*": ["src/utils/*"],
+            "@validator/*": ["src/validators/*"],
+        }
+    },
+    "exclude": ["node_modules", "dist"]
+}
