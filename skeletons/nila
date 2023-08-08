@@ -84,6 +84,7 @@ import * as {CAPSNAME} from "@model/{NAME}.model";
  * @param {*} res 
  */ 
 export const store = async (req, res) => {
+    
     await {CAPSNAME}.store(req.body)
     .then((user) => {
         return res.successResponse(200, 'New user created', user);
@@ -101,6 +102,7 @@ export const store = async (req, res) => {
  * @param {*} res 
  */ 
 export const list = async (req, res) => {
+
     await {CAPSNAME}.list(req.body)
     .then((user) => {
         res.successResponse(200, 'Users list', user);
@@ -137,14 +139,15 @@ export const getOne = async (req, res) => {
  * @param {*} res 
  */ 
 export const update = async (req, res) => {
-    try {
-        const { name, email } = req.body;
-        const user = await {CAPSNAME}.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
-        if (!user) return res.successResponse(400, 'User not found', user);
-        return res.successResponse(200, 'User details updated successfully', user);
-    } catch (error) {
+
+    await {CAPSNAME}.update(req.params.id, req.body)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User details updated', user);
+        else res.errorResponse(400, 'User not found', []);
+    })
+    .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    }
+    })
 }
 
 /**
@@ -155,14 +158,15 @@ export const update = async (req, res) => {
  * @param {*} res 
  */ 
 export const deleteOne = async (req, res) => {
-    try {
-        const user = await {CAPSNAME}.findByIdAndDelete(req.params.id).exec()
-        if (!user) return res.errorResponse(400, 'User not found', user);
-        return res.successResponse(200, 'User deleted successfully', user);
-    } catch (error) {
-        console.error("Error storing user:", error);
+
+    await {CAPSNAME}.deleteOne(req.params.id)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User deleted', user);
+        else res.errorResponse(400, 'User not found', []);
+    })
+    .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    }
+    })
 }
 
 `;
@@ -266,9 +270,22 @@ export const getById = (_id) => {
  * @param {*} _id 
  * @returns 
  */
-export const update = (_id,) => {
+export const update = (_id, data) => {
     return new Promise(async (resolve, reject) => {
-        const user = await User.findOne({_id: _id});
+        const user = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
+        resolve(user);
+    })
+}
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const deleteOne = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        const user = await {CAPSNAME}.findByIdAndDelete(_id).exec()
         resolve(user);
     })
 }`
