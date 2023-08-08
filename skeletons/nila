@@ -74,7 +74,7 @@ program
 
 
 const sampleController = `
-import * as {CAPSNAME} from "@model/{Name}.model";
+import * as {CAPSNAME} from "@model/{NAME}.model";
 
 /**
  * @author ${authorName || 'sivabharathy' }
