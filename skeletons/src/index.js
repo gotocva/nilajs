@@ -13,5 +13,5 @@ export const application = routeLoader(app);
 const http = createServer(application);
 
 http.listen(process.env.PORT || appConfig.PORT || 8080, () => {
-    LOG.info(`Server listening on port ${process.env.PORT || appConfig.PORT || 8080} successfully`);
+    LOG.info(`Application Server listening on port ${process.env.PORT || appConfig.PORT || 8080} successfully`);
 });

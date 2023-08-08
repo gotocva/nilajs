@@ -1,9 +1,13 @@
 {
   "name": "nilajs",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.2",
+  "description": "NilaJS a simple and powerfull REST api framework built on top of expressjs",
   "main": "index.js",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gotocva/nilajs.git"
+  },
   "scripts": {
     "publish:local": "npm link",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,13 +15,22 @@
   "bin": {
     "nila": "index.js"
   },
-  "keywords": [],
+  "homepage": "https://github.com/gotocva/nilajs",
+  "issues": "https://github.com/gotocva/nilajs/issues",
+  "keywords": [
+    "nodejs framework",
+    "expressjs",
+    "express",
+    "fastify",
+    "rest api"
+  ],
   "author": "sivabharathy",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "commander": "^9.4.0"
+    "commander": "^9.4.0",
+    "mkdirp": "^3.0.1"
   }
 }

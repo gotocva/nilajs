@@ -27,5 +27,9 @@ export const appConfig = {
     API_RATE_LIMIT : 100, // 100 requests for every 15 minutes
 
     LOG_DIRECTORY: 'logs',
+
+    PM2_LOGS_DIRECTORY : env.PM2_LOGS_DIRECTORY || '/Users/siva/.pm2/logs/npm-start-out.log',
+    PM2_LOGS_USERNAME: env.PM2_LOGS_USERNAME || 'admin',
+    PM2_LOGS_PASSWORD: env.PM2_LOGS_PASSWORD || 'admin',
 }
 
