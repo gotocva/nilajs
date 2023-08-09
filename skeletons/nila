@@ -2,13 +2,22 @@
 
 const fs = require('fs');
 const { Command } = require("commander");
+const prettier = require('prettier');
+
+
 const program = new Command();
 
 program.name("nila").description("CLI to create files with sample codes").version("0.0.1")
 
 const authorName = require('./package.json').author;
 
-function replacePlaceholders(content, replacements) {
+/**
+ * 
+ * @param content 
+ * @param replacements 
+ * @returns 
+ */
+const render = (content, replacements) => {
     // Replace each placeholder with its corresponding value
     for (const [placeholder, value] of Object.entries(replacements)) {
       const regex = new RegExp(`{${placeholder}}`, 'g');
@@ -17,30 +26,33 @@ function replacePlaceholders(content, replacements) {
     return content;
 }
 
+/**
+ * 
+ * @param filePath 
+ * @param data 
+ */
+const writeFile = (data, filePath) => {
+    fs.writeFile(`${process.cwd()}/${filePath}`, data, 'utf8', (err) => {
+    if (err) {
+        console.error('Error generating new controller:', err);
+        return;
+    }
+    console.log(`\x1b[36mcreated\x1b[0m : ${filePath}`);
+    });
+}
+
 program
 .command("create:controller")
 .description("Generate a new controller")
 .argument("<controllerName>", "Controller Name")
 .action(async (controllerName) => {
-    // 
-    const firstCaps = controllerName.charAt(0).toUpperCase() + controllerName.slice(1);
-
+    // replacements object
     const replacements = {
         NAME: controllerName.toLowerCase(),
-        CAPSNAME: firstCaps
+        CAPSNAME: controllerName.charAt(0).toUpperCase() + controllerName.slice(1)
     }
-
-    // Perform replacements
-    const replacedData = replacePlaceholders(sampleController, replacements);
-
-    // Write the new file
-    fs.writeFile(`${process.cwd()}/src/controllers/${controllerName}.controller.js`, replacedData, 'utf8', (err) => {
-    if (err) {
-        console.error('Error generating new controller:', err);
-        return;
-    }
-    console.log(`\x1b[36mcreated\x1b[0m : src/controllers/${controllerName}.controller.js`);
-    });
+    // Write the new controller file
+    writeFile(render(sampleController, replacements), `src/controllers/${controllerName}.controller.js`);
 })
 
 program
@@ -48,30 +60,85 @@ program
 .description("Generate a new model")
 .argument("<modelname>", "Model Name")
 .action(async (modelname) => {
+
     // 
     const firstCaps = modelname.charAt(0).toUpperCase() + modelname.slice(1);
     // modelname.replace(/\b\w/g, (char) => char.toUpperCase());
 
+    // replacements object
     const replacements = {
         NAME: modelname.toLowerCase(),
-        CAPSNAME: firstCaps
+        CAPSNAME: modelname.charAt(0).toUpperCase() + modelname.slice(1)
     }
+    // Write the new model file
+    writeFile(render(sampleModel, replacements), `src/models/${modelname}.model.js`);
+});
 
-    // Perform replacements
-    const replacedData = replacePlaceholders(sampleModel, replacements);
-
-    // Write the new file
-    fs.writeFile(`${process.cwd()}/src/models/${modelname}.model.js`, replacedData, 'utf8', (err) => {
-    if (err) {
-        console.error('Error generating new Model:', err);
-        return;
+program
+.command("create:module")
+.description("Generate a new module with model, route and controller")
+.argument("<moduleName>", "Module Name")
+.action(async (moduleName) => {
+    // replacements object
+    const replacements = {
+        NAME: moduleName.toLowerCase(),
+        CAPSNAME: moduleName.charAt(0).toUpperCase() + moduleName.slice(1)
     }
-    console.log(`\x1b[36mcreated\x1b[0m : src/models/${modelname}.model.js`);
-    });
-})
+    // Write the new model file
+    writeFile(render(sampleModel, replacements), `src/models/${moduleName}.model.js`);
+    // Write the new controller file
+    writeFile(render(sampleController, replacements), `src/controllers/${moduleName}.controller.js`);
+    // Write the new routes file
+    writeFile(render(sampleRoutes, replacements), `src/routes/${moduleName}.routes.js`);
 
+    try {
+        let routesIndexData = fs.readFileSync(`${process.cwd()}/src/routes/index.js`, 'utf8');
+        let replaceData = `
+import ${moduleName}Router from './${moduleName}.routes'; \n
+export const routeLoader = (app) => { \n \n
+    app.use('/${moduleName}', ${moduleName}Router)`;
 
+        routesIndexData = routesIndexData.replace('export const routeLoader = (app) => {', replaceData);
+        const finalData = await prettier.format(routesIndexData, { semi: false, parser: "babel" });
+        writeFile(finalData, `src/routes/index.js`);
+    } catch (err) {
+        console.error(err);
+    }
+});
 
+program
+.command("delete:module")
+.description("Delete a existing module with model, route and controller")
+.argument("<moduleName>", "Module Name")
+.action(async (moduleName) => {
+    try {
+        fs.unlinkSync(`${process.cwd()}/src/models/${moduleName}.model.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/models/${moduleName}.model.js`);
+        fs.unlinkSync(`${process.cwd()}/src/controllers/${moduleName}.controller.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/controllers/${moduleName}.controller.js`);
+        fs.unlinkSync(`${process.cwd()}/src/routes/${moduleName}.routes.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/routes/${moduleName}.routes.js`);
+    } catch (error) {
+        console.log('Error occurs, try again');
+    }
+});
+
+const sampleRoutes = `
+import express from "express";
+
+const {NAME}Router = express.Router();
+
+import * as {NAME}Controller from "@controller/{NAME}.controller";
+
+/**
+ * {NAME} api routes
+ *
+ */
+{NAME}Router.get('/{NAME}s', [ ],  {NAME}Controller.list);
+{NAME}Router.post('/{NAME}', [], {NAME}Controller.store{NAME});
+
+module.exports = {NAME}Router;
+`;
 
 const sampleController = `
 import * as {CAPSNAME} from "@model/{NAME}.model";
@@ -258,8 +325,8 @@ export const list = () => {
  */
 export const getById = (_id) => {
     return new Promise(async (resolve, reject) => {
-        const user = await User.findOne({_id: _id});
-        resolve(user);
+        const {NAME} = await {NAME}.findOne({_id: _id});
+        resolve({NAME});
     })
 }
 

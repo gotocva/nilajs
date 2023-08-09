@@ -4,13 +4,11 @@
 ## NilaJS REST api framework
 
 
-```
-npx nilajs create:app <appName>
-```
-
-```
+```bash
 npm i nilajs -g
+```
 
+```bash
 nila create:app <appName>
 ```
 
