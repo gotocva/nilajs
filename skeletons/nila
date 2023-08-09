@@ -60,6 +60,11 @@ program
 .description("Generate a new model")
 .argument("<modelname>", "Model Name")
 .action(async (modelname) => {
+
+    // 
+    const firstCaps = modelname.charAt(0).toUpperCase() + modelname.slice(1);
+    // modelname.replace(/\b\w/g, (char) => char.toUpperCase());
+
     // replacements object
     const replacements = {
         NAME: modelname.toLowerCase(),
@@ -146,7 +151,14 @@ import * as {CAPSNAME} from "@model/{NAME}.model";
  * @param {*} res 
  */ 
 export const store = async (req, res) => {
-
+    
+    await {CAPSNAME}.store(req.body)
+    .then((user) => {
+        return res.successResponse(200, 'New user created', user);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
 }
 
 /**
@@ -158,6 +170,13 @@ export const store = async (req, res) => {
  */ 
 export const list = async (req, res) => {
 
+    await {CAPSNAME}.list(req.body)
+    .then((user) => {
+        res.successResponse(200, 'Users list', user);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
 }
 
 /**
@@ -169,6 +188,14 @@ export const list = async (req, res) => {
  */ 
 export const getOne = async (req, res) => {
 
+    await {CAPSNAME}.getById(req.params.id)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User details', user);
+        else res.errorResponse(400, 'User not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
 }
 
 /**
@@ -180,6 +207,14 @@ export const getOne = async (req, res) => {
  */ 
 export const update = async (req, res) => {
 
+    await {CAPSNAME}.update(req.params.id, req.body)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User details updated', user);
+        else res.errorResponse(400, 'User not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
 }
 
 /**
@@ -191,6 +226,14 @@ export const update = async (req, res) => {
  */ 
 export const deleteOne = async (req, res) => {
 
+    await {CAPSNAME}.deleteOne(req.params.id)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User deleted', user);
+        else res.errorResponse(400, 'User not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
 }
 
 `;
@@ -284,6 +327,33 @@ export const getById = (_id) => {
     return new Promise(async (resolve, reject) => {
         const {NAME} = await {NAME}.findOne({_id: _id});
         resolve({NAME});
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const update = (_id, data) => {
+    return new Promise(async (resolve, reject) => {
+        const user = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
+        resolve(user);
+    })
+}
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const deleteOne = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        const user = await {CAPSNAME}.findByIdAndDelete(_id).exec()
+        resolve(user);
     })
 }`
 
