@@ -18,13 +18,24 @@ export const responseHandler = (req, res, next) => {
     };
     // Error handling middleware
     res.errorResponse = function (statusCode, message, err = {}) {
-      const response = {
-        status: false,
-        message: message,
-        status_code: statusCode,
-        data: err,
-      };
-      return res.status(statusCode).json(response);
+
+      if ('name' in err && err.name == 'ValidationError') {
+        const response = {
+          status: false,
+          message: err.message,
+          status_code: 400,
+          data: err,
+        };
+        return res.status(400).json(response);
+      } else {
+          const response = {
+            status: false,
+            message: message,
+            status_code: statusCode,
+            data: err,
+          };
+          return res.status(statusCode).json(response);
+      }
     };
     next();
 }

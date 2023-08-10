@@ -1,19 +1,19 @@
+
 import express from "express";
-
-import * as UserController from "@controller/user.controller";
-
-import { authCheck } from "@middleware/auth.middleware";
 
 const userRouter = express.Router();
 
-userRouter.get('/', (req, res) => { res.send('Api v1 working'); });
+import * as userController from "@controller/user.controller";
+import { checkObjectId } from "@middleware/objectId.middleware";
 
 /**
- * User api routes
+ * user api routes
  *
  */
-userRouter.get('/users', [ authCheck ],  UserController.getAllUsers);
-userRouter.post('/user/auth/register', [], UserController.storeUser);
-userRouter.post('/user/auth/login', UserController.loginUser);
+userRouter.get('/list', [ ],  userController.list);
+userRouter.post('/', [], userController.create);
+userRouter.get('/:id', [checkObjectId],  userController.getOne);
+userRouter.put('/:id', [checkObjectId], userController.update);
+userRouter.delete('/:id', [checkObjectId], userController.deleteOne);
 
 module.exports = userRouter;

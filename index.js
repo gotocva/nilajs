@@ -53,4 +53,396 @@ program
     createApp(appName);
 })
 
+const authorName = require('./package.json').author;
+
+/**
+ * 
+ * @param content 
+ * @param replacements 
+ * @returns 
+ */
+const render = (content, replacements) => {
+    // Replace each placeholder with its corresponding value
+    for (const [placeholder, value] of Object.entries(replacements)) {
+      const regex = new RegExp(`{${placeholder}}`, 'g');
+      content = content.replace(regex, value);
+    }
+    return content;
+}
+
+/**
+ * 
+ * @param filePath 
+ * @param data 
+ */
+const writeFile = (data, filePath) => {
+    fs.writeFile(`${process.cwd()}/${filePath}`, data, 'utf8', (err) => {
+    if (err) {
+        console.error('Error generating new controller:', err);
+        return;
+    }
+    console.log(`\x1b[36mcreated\x1b[0m : ${filePath}`);
+    });
+}
+
+program
+.command("create:controller")
+.description("Generate a new controller")
+.argument("<controllerName>", "Controller Name")
+.action(async (controllerName) => {
+    // replacements object
+    const replacements = {
+        NAME: controllerName.toLowerCase(),
+        CAPSNAME: controllerName.charAt(0).toUpperCase() + controllerName.slice(1)
+    }
+    // Write the new controller file
+    writeFile(render(sampleController, replacements), `src/controllers/${controllerName}.controller.js`);
+})
+
+program
+.command("create:model")
+.description("Generate a new model")
+.argument("<modelname>", "Model Name")
+.action(async (modelname) => {
+
+    // 
+    const firstCaps = modelname.charAt(0).toUpperCase() + modelname.slice(1);
+    // modelname.replace(/\b\w/g, (char) => char.toUpperCase());
+
+    // replacements object
+    const replacements = {
+        NAME: modelname.toLowerCase(),
+        CAPSNAME: modelname.charAt(0).toUpperCase() + modelname.slice(1)
+    }
+    // Write the new model file
+    writeFile(render(sampleModel, replacements), `src/models/${modelname}.model.js`);
+});
+
+program
+.command("create:module")
+.description("Generate a new module with model, route and controller")
+.argument("<moduleName>", "Module Name")
+.action(async (moduleName) => {
+    moduleName = moduleName.toLowerCase();
+    // replacements object
+    const replacements = {
+        NAME: moduleName.toLowerCase(),
+        CAPSNAME: moduleName.charAt(0).toUpperCase() + moduleName.slice(1)
+    }
+    // Write the new model file
+    writeFile(render(sampleModel, replacements), `src/models/${moduleName}.model.js`);
+    // Write the new controller file
+    writeFile(render(sampleController, replacements), `src/controllers/${moduleName}.controller.js`);
+    // Write the new routes file
+    writeFile(render(sampleRoutes, replacements), `src/routes/${moduleName}.routes.js`);
+
+    try {
+        let routesIndexData = fs.readFileSync(`${process.cwd()}/src/routes/index.js`, 'utf8');
+        let replaceData = `
+import ${moduleName}Router from './${moduleName}.routes'; \n
+export const routeLoader = (app) => { \n \n
+    // ${moduleName} routes injection
+    app.use('/${moduleName}', ${moduleName}Router)`;
+
+        routesIndexData = routesIndexData.replace('export const routeLoader = (app) => {', replaceData);
+        const finalData = await prettier.format(routesIndexData, { semi: false, parser: "babel" });
+        writeFile(finalData, `src/routes/index.js`);
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+program
+.command("delete:module")
+.description("Delete a existing module with model, route and controller")
+.argument("<moduleName>", "Module Name")
+.action(async (moduleName) => {
+    try {
+        fs.unlinkSync(`${process.cwd()}/src/models/${moduleName}.model.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/models/${moduleName}.model.js`);
+        fs.unlinkSync(`${process.cwd()}/src/controllers/${moduleName}.controller.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/controllers/${moduleName}.controller.js`);
+        fs.unlinkSync(`${process.cwd()}/src/routes/${moduleName}.routes.js`);
+        console.log(`\x1b[36mdeleted\x1b[0m : src/routes/${moduleName}.routes.js`);
+    } catch (error) {
+        console.log('Error occurs, try again');
+    }
+});
+
+const sampleRoutes = `
+import express from "express";
+
+const {NAME}Router = express.Router();
+
+import * as {NAME}Controller from "@controller/{NAME}.controller";
+import { checkObjectId } from "@middleware/objectId.middleware";
+
+/**
+ * {NAME} api routes
+ *
+ */
+{NAME}Router.get('/list', [ ],  {NAME}Controller.list);
+{NAME}Router.post('/', [], {NAME}Controller.create);
+{NAME}Router.get('/:id', [checkObjectId],  {NAME}Controller.getOne);
+{NAME}Router.put('/:id', [checkObjectId], {NAME}Controller.update);
+{NAME}Router.delete('/:id', [checkObjectId], {NAME}Controller.deleteOne);
+
+module.exports = {NAME}Router;
+`;
+
+const sampleController = `
+import * as {CAPSNAME} from "@model/{NAME}.model";
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const create = async (req, res) => {
+    
+    await {CAPSNAME}._create(req.body)
+    .then(({NAME}) => {
+        return res.successResponse(200, 'New {NAME} created', {NAME});
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const list = async (req, res) => {
+
+    await {CAPSNAME}._list(req.body)
+    .then(({NAME}) => {
+        res.successResponse(200, '{CAPSNAME} list', {NAME});
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const getOne = async (req, res) => {
+
+    await {CAPSNAME}._getById(req.params.id)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{CAPSNAME} details', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const update = async (req, res) => {
+
+    await {CAPSNAME}._update(req.params.id, req.body)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{NAME} details updated', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const deleteOne = async (req, res) => {
+
+    await {CAPSNAME}._delete(req.params.id)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{NAME} deleted', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+`;
+
+
+const sampleModel = `
+import mongoose from 'mongoose';
+
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+
+/**
+ * {CAPSNAME} Schema
+ * @created_at ${ new Date() }
+ * @description {CAPSNAME} model
+ */
+const schema = new Schema({
+
+    name: {
+        type: String,
+        required: [true, 'name must not be empty'],
+    },
+}, { timestamps: false, versionKey: false });
+
+schema.post('init', function(doc) {
+    // it is called while accessing the data from DB example: find()
+    // console.log('%s has been initialized from the db', doc._id);
+});
+
+schema.post('validate', function(doc) {
+    // This middleware is called while inserting records 1st
+    // console.log('%s has been validated (but not saved yet)', doc._id);
+});
+
+schema.pre('save', () => {
+    // This middleware is called while inserting records 2nd
+    // console.log('Hello from pre save')
+});
+
+schema.post('save', function(doc) {
+    // This middleware is called while inserting records 3rd
+    // console.log('%s has been saved', doc._id);
+});
+
+schema.post('remove', function(doc) {
+    // console.log('%s has been removed', doc._id);
+});
+
+export const {CAPSNAME} = mongoose.model('{CAPSNAME}', schema);
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * 
+ * @param {*} data 
+ * @returns 
+ */
+export const _create = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const obj{CAPSNAME} = new {CAPSNAME}(data);
+            const {NAME} = await obj{CAPSNAME}.save();
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @returns 
+ */
+export const _list = (query = {}) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const ignoreColoumns = {
+                // auth_token: false
+            }
+            const {NAME} = await {CAPSNAME}.find(query, ignoreColoumns);
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    })
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _getById = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findOne({_id: _id});
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _get = (query) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findOne(query);
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _update = (_id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _delete = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findByIdAndDelete(_id).exec();
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}`
+
 program.parse(process.argv)

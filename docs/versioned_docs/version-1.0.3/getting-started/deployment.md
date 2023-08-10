@@ -1,8 +1,9 @@
 ---
 sidebar_position: 4
+title: Deployment
 ---
 
-# Markdown Features
+# Deployment
 
 Docusaurus supports **[Markdown](https://daringfireball.net/projects/markdown/syntax)** and a few **additional features**.
 

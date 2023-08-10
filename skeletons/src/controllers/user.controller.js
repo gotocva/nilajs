@@ -1,41 +1,16 @@
+
 import * as User from "@model/user.model";
-import { decrypt } from "@util/encryption";
 
 /**
  * @author sivabharathy
  * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * @param {*} req 
  * @param {*} res 
  */ 
-export const loginUser = async (req, res) => {
-
-    await User.getByEmail(req.body.email)
-    .then((user) => {
-        if (user) {
-            if (decrypt(user.password) == req.body.password) {
-                return res.successResponse(200, 'Logged in successfully', user);
-            } else {
-                return res.errorResponse(401, 'Invalid password', {});
-            }
-        } else {
-            return res.errorResponse(401, 'Email id not exist', {});
-        }
-    })
-    .catch((error) => {
-        console.log({error});
-        return res.errorResponse(500,'Exception caught', error);
-    });
-}
-
-/**
- * @author sivabharathy
- * 
- * @param {*} req 
- * @param {*} res 
- */
-export const storeUser = async (req, res) => {
-
-    await User.store(req.body)
+export const create = async (req, res) => {
+    
+    await User._create(req.body)
     .then((user) => {
         return res.successResponse(200, 'New user created', user);
     })
@@ -47,16 +22,75 @@ export const storeUser = async (req, res) => {
 /**
  * @author sivabharathy
  * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * @param {*} req 
  * @param {*} res 
- */
-export const getAllUsers = async (req, res) => {
+ */ 
+export const list = async (req, res) => {
 
-    await User.list(req.body)
+    await User._list(req.body)
     .then((user) => {
-        res.successResponse(200, 'Users list', user);
+        res.successResponse(200, 'User list', user);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
     })
 }
+
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const getOne = async (req, res) => {
+
+    await User._getById(req.params.id)
+    .then((user) => {
+        if (user) res.successResponse(200, 'User details', user);
+        else res.errorResponse(400, 'user not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const update = async (req, res) => {
+
+    await User._update(req.params.id, req.body)
+    .then((user) => {
+        if (user) res.successResponse(200, 'user details updated', user);
+        else res.errorResponse(400, 'user not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} req 
+ * @param {*} res 
+ */ 
+export const deleteOne = async (req, res) => {
+
+    await User._delete(req.params.id)
+    .then((user) => {
+        if (user) res.successResponse(200, 'user deleted', user);
+        else res.errorResponse(400, 'user not found', []);
+    })
+    .catch((error) => {
+        return res.errorResponse(500,'Exception caught', error);
+    })
+}
+

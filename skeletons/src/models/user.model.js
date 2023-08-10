@@ -7,6 +7,7 @@ const ObjectId = Schema.ObjectId;
 
 /**
  * User Schema
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * @description User model
  */
 const schema = new Schema({
@@ -44,8 +45,8 @@ schema.post('init', function(doc) {
 
 schema.post('validate', function(doc) {
     // This middleware is called while inserting records 1st
-    doc.password = encrypt(doc.password);
     // console.log('%s has been validated (but not saved yet)', doc._id);
+    doc.password = encrypt(doc.password);
 });
 
 schema.pre('save', () => {
@@ -65,38 +66,113 @@ schema.post('remove', function(doc) {
 export const User = mongoose.model('User', schema);
 
 /**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * 
  * @param {*} data 
  * @returns 
  */
-export const store = (data) => {
+export const _create = (data) => {
     data.auth_token = encrypt(JSON.stringify(data));
     return new Promise(async (resolve, reject) => {
-        const obj = new User(data);
-        const user = await obj.save();
-        resolve(user);
+        try {
+            const objUser = new User(data);
+            const user = await objUser.save();
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
     })
 }
 
 /**
+ * @author sivabharathy
  * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * @returns 
  */
-export const list = () => {
+export const _list = (query = {}) => {
     return new Promise(async (resolve, reject) => {
-        const user = await User.find({}, {auth_token: false, password: false});
-        resolve(user);
+        try {
+            const ignoreColoumns = {
+                // auth_token: false
+            }
+            const user = await User.find(query, ignoreColoumns);
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
     })
 }
 
 /**
+ * @author sivabharathy
  * 
- * @param {*} email 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} _id 
  * @returns 
  */
-export const getByEmail = (email) => {
+export const _getById = (_id) => {
     return new Promise(async (resolve, reject) => {
-        const user = await User.findOne({email: email});
-        resolve(user);
-    })
+        try {
+            const user = await User.findOne({_id: _id});
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} _id 
+ * @returns 
+ */
+export const _get = (query) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne(query);
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} _id 
+ * @returns 
+ */
+export const _update = (_id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findByIdAndUpdate(_id, data, { new: true });
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+/**
+ * @author sivabharathy
+ * 
+ * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
+ * @param {*} _id 
+ * @returns 
+ */
+export const _delete = (_id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findByIdAndDelete(_id).exec();
+            resolve(user);
+        } catch (error) {
+            reject(error)
+        } 
+    });
 }
