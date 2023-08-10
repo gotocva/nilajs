@@ -1,8 +1,7 @@
 ---
 sidebar_position: 1
+title: Installation
 ---
-
-# Documentation
 
 ### Meet NilaJS
 
@@ -16,14 +15,6 @@ Let's discover **The power of NilaJS in less than 5 minutes**.
 Get started by **creating a new NilaJS project**.
 
 ```bash
-npx nilajs create:app myapp
-```
-
-Here myapp is the application name change it according to your project. 
-
--------------------------------- OR -------------------------------- 
-
-```bash
 npm i nilajs -g
 ```
 
@@ -33,8 +24,14 @@ The above command will install nilajs cli globally on your system. After you can
 nila create:app myapp
 ```
 
+```bash
+cd myapp
+
+npm install
+
+npm start
+```
 ### What you'll need
 
 - [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
   - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-

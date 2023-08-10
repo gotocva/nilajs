@@ -16,14 +16,6 @@ Let's discover **The power of NilaJS in less than 5 minutes**.
 Get started by **creating a new NilaJS project**.
 
 ```bash
-npx nilajs create:app myapp
-```
-
-Here myapp is the application name change it according to your project. 
-
--------------------------------- OR -------------------------------- 
-
-```bash
 npm i nilajs -g
 ```
 

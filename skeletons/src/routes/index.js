@@ -1,25 +1,24 @@
 import { auth, readPM2Logs } from "@log/pm2-viewer"
-import userRouter from "./user.routes"
 
+import userRouter from "./user.routes"
+import { LOG } from "@log/index"
 
 export const routeLoader = (app) => {
+  // user routes injection
+  app.use("/user", userRouter)
 
-  app.get("/api", (req, res) => {
-    res.send("api routes working")
+  app.get("/ping", (req, res) => {
+    res.send("ping routes working responding pong")
   })
 
-  //routes-injection
-  app.use("/api", userRouter)
-
-  app.get('/pm2/logs', auth, readPM2Logs);
+  app.get("/pm2/logs", auth, readPM2Logs)
   app.get("*", function (req, res) {
     return res.errorResponse(404, "Route not found", {})
-  })
+  });
 
   // This middleware should be defined after all other route and middleware definitions.
   app.use((err, req, res, next) => {
-    // TODO Log the error into database for future debugging
-
+    LOG.error(err.message || "Internal Server Error", err);
     // Set the status code based on the error
     const statusCode = err.statusCode || 500
 

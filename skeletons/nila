@@ -79,6 +79,7 @@ program
 .description("Generate a new module with model, route and controller")
 .argument("<moduleName>", "Module Name")
 .action(async (moduleName) => {
+    moduleName = moduleName.toLowerCase();
     // replacements object
     const replacements = {
         NAME: moduleName.toLowerCase(),
@@ -96,6 +97,7 @@ program
         let replaceData = `
 import ${moduleName}Router from './${moduleName}.routes'; \n
 export const routeLoader = (app) => { \n \n
+    // ${moduleName} routes injection
     app.use('/${moduleName}', ${moduleName}Router)`;
 
         routesIndexData = routesIndexData.replace('export const routeLoader = (app) => {', replaceData);
@@ -129,13 +131,17 @@ import express from "express";
 const {NAME}Router = express.Router();
 
 import * as {NAME}Controller from "@controller/{NAME}.controller";
+import { checkObjectId } from "@middleware/objectId.middleware";
 
 /**
  * {NAME} api routes
  *
  */
-{NAME}Router.get('/{NAME}s', [ ],  {NAME}Controller.list);
-{NAME}Router.post('/{NAME}', [], {NAME}Controller.store{NAME});
+{NAME}Router.get('/list', [ ],  {NAME}Controller.list);
+{NAME}Router.post('/', [], {NAME}Controller.create);
+{NAME}Router.get('/:id', [checkObjectId],  {NAME}Controller.getOne);
+{NAME}Router.put('/:id', [checkObjectId], {NAME}Controller.update);
+{NAME}Router.delete('/:id', [checkObjectId], {NAME}Controller.deleteOne);
 
 module.exports = {NAME}Router;
 `;
@@ -150,11 +156,11 @@ import * as {CAPSNAME} from "@model/{NAME}.model";
  * @param {*} req 
  * @param {*} res 
  */ 
-export const store = async (req, res) => {
+export const create = async (req, res) => {
     
-    await {CAPSNAME}.store(req.body)
-    .then((user) => {
-        return res.successResponse(200, 'New user created', user);
+    await {CAPSNAME}._create(req.body)
+    .then(({NAME}) => {
+        return res.successResponse(200, 'New {NAME} created', {NAME});
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
@@ -170,9 +176,9 @@ export const store = async (req, res) => {
  */ 
 export const list = async (req, res) => {
 
-    await {CAPSNAME}.list(req.body)
-    .then((user) => {
-        res.successResponse(200, 'Users list', user);
+    await {CAPSNAME}._list(req.body)
+    .then(({NAME}) => {
+        res.successResponse(200, '{CAPSNAME} list', {NAME});
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
@@ -188,10 +194,10 @@ export const list = async (req, res) => {
  */ 
 export const getOne = async (req, res) => {
 
-    await {CAPSNAME}.getById(req.params.id)
-    .then((user) => {
-        if (user) res.successResponse(200, 'User details', user);
-        else res.errorResponse(400, 'User not found', []);
+    await {CAPSNAME}._getById(req.params.id)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{CAPSNAME} details', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
@@ -207,10 +213,10 @@ export const getOne = async (req, res) => {
  */ 
 export const update = async (req, res) => {
 
-    await {CAPSNAME}.update(req.params.id, req.body)
-    .then((user) => {
-        if (user) res.successResponse(200, 'User details updated', user);
-        else res.errorResponse(400, 'User not found', []);
+    await {CAPSNAME}._update(req.params.id, req.body)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{NAME} details updated', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
@@ -226,10 +232,10 @@ export const update = async (req, res) => {
  */ 
 export const deleteOne = async (req, res) => {
 
-    await {CAPSNAME}.deleteOne(req.params.id)
-    .then((user) => {
-        if (user) res.successResponse(200, 'User deleted', user);
-        else res.errorResponse(400, 'User not found', []);
+    await {CAPSNAME}._delete(req.params.id)
+    .then(({NAME}) => {
+        if ({NAME}) res.successResponse(200, '{NAME} deleted', {NAME});
+        else res.errorResponse(400, '{NAME} not found', []);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
@@ -292,11 +298,15 @@ export const {CAPSNAME} = mongoose.model('{CAPSNAME}', schema);
  * @param {*} data 
  * @returns 
  */
-export const store = (data) => {
+export const _create = (data) => {
     return new Promise(async (resolve, reject) => {
-        const obj = new {CAPSNAME}(data);
-        const {NAME} = await obj.save();
-        resolve({NAME});
+        try {
+            const obj{CAPSNAME} = new {CAPSNAME}(data);
+            const {NAME} = await obj{CAPSNAME}.save();
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
     })
 }
 
@@ -306,27 +316,17 @@ export const store = (data) => {
  * @created_at ${ new Date() }
  * @returns 
  */
-export const list = () => {
+export const _list = (query = {}) => {
     return new Promise(async (resolve, reject) => {
-        const ignoreColoumns = {
-            // auth_token: false
-        }
-        const {NAME} = await {CAPSNAME}.find({}, ignoreColoumns);
-        resolve({NAME});
-    })
-}
-
-/**
- * @author ${authorName || 'sivabharathy' }
- * 
- * @created_at ${ new Date() }
- * @param {*} _id 
- * @returns 
- */
-export const getById = (_id) => {
-    return new Promise(async (resolve, reject) => {
-        const {NAME} = await {NAME}.findOne({_id: _id});
-        resolve({NAME});
+        try {
+            const ignoreColoumns = {
+                // auth_token: false
+            }
+            const {NAME} = await {CAPSNAME}.find(query, ignoreColoumns);
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
     })
 }
 
@@ -337,11 +337,51 @@ export const getById = (_id) => {
  * @param {*} _id 
  * @returns 
  */
-export const update = (_id, data) => {
+export const _getById = (_id) => {
     return new Promise(async (resolve, reject) => {
-        const user = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
-        resolve(user);
-    })
+        try {
+            const {NAME} = await {CAPSNAME}.findOne({_id: _id});
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _get = (query) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findOne(query);
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
+}
+
+/**
+ * @author ${authorName || 'sivabharathy' }
+ * 
+ * @created_at ${ new Date() }
+ * @param {*} _id 
+ * @returns 
+ */
+export const _update = (_id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const {NAME} = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
 }
 /**
  * @author ${authorName || 'sivabharathy' }
@@ -350,11 +390,15 @@ export const update = (_id, data) => {
  * @param {*} _id 
  * @returns 
  */
-export const deleteOne = (_id) => {
+export const _delete = (_id) => {
     return new Promise(async (resolve, reject) => {
-        const user = await {CAPSNAME}.findByIdAndDelete(_id).exec()
-        resolve(user);
-    })
+        try {
+            const {NAME} = await {CAPSNAME}.findByIdAndDelete(_id).exec();
+            resolve({NAME});
+        } catch (error) {
+            reject(error)
+        } 
+    });
 }`
 
 program.parse(process.argv)
