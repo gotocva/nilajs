@@ -1,32 +1,31 @@
 ---
+title: Changelog
 sidebar_position: 1
 ---
 
-# Documentation
+:::info
 
-### Meet NilaJS
+To access the documentation directly [click here](category/getting-started)
 
-NilaJS is a REST api framework with expressive, elegant syntax. A web framework provides a structure and starting point for creating your application, allowing you to focus on creating something amazing while we sweat the details.
+:::
 
-Built on top of Express.js and Mongodb
-### Getting Started
+## Versions
 
-Let's discover **The power of NilaJS in less than 5 minutes**.
+- v1.0.3
 
-Get started by **creating a new NilaJS project**.
+  This is the current latest version
+  
+- v1.0.2
+- v1.0.1
+- v1.0.0
 
-```bash
-npm i nilajs -g
-```
+## Versioning Policy
 
-The above command will install nilajs cli globally on your system. After you can create a new NilaJS project using below command.
+Nilajs releases closely follow [Semantic Versioning](https://semver.org/).
 
-```bash
-nila create:app myapp
-```
+That means that with a version number `x.y.z`:
 
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- when releasing critical bug fixes, we make a patch release by increasing the `z` number (ex: `1.2.3` to `1.2.4`).
+- when releasing new features or non-critical fixes, we make a minor release by increasing the `y` number (ex: `1.2.3` to `1.3.0`).
+- when releasing breaking changes, we make a major release by increasing the `x` number (ex: `1.2.3` to `2.0.0`).
 
