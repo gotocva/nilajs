@@ -21,7 +21,7 @@ const config = {
   organizationName: 'nilajs', // Usually your GitHub org/user name.
   projectName: 'nilajs', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internalization, you can use this field to set useful
@@ -87,7 +87,6 @@ const config = {
             position: 'left',
             label: 'Docs',
           },
-          {to: '/docs/changelog', label: 'Changelog', position: 'left'},
           {
             type: 'docsVersionDropdown',
             position: 'right',
@@ -104,10 +103,14 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'About',
             items: [
               {
-                label: 'Documentation',
+                label: 'Privacy policy',
+                to: '/docs/intro',
+              },
+              {
+                label: 'Terms and conditions',
                 to: '/docs/intro',
               },
             ],
@@ -115,17 +118,17 @@ const config = {
           {
             title: 'Community',
             items: [
+              // {
+              //   label: 'Stack Overflow',
+              //   href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              // },
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Instagram',
+                href: 'https://www.instagram.com/siva_bharathy_/',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://twitter.com/gotocva',
               },
             ],
           },
@@ -143,7 +146,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} NilaJS, Inc. Built with Love by <a href="https://sivabharathy.in" target="_blank">sivabharathy</a>.`,
+        copyright: `Copyright © ${new Date().getFullYear()} NilaJS, Inc. Built with Love by <a style="color: white" href="https://sivabharathy.in" target="_blank">sivabharathy</a>.`,
       },
       prism: {
         theme: lightCodeTheme,
