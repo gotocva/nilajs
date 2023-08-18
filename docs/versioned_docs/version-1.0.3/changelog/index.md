@@ -18,6 +18,7 @@ That means that with a version number `x.y.z`:
 - NilaJS v1.0.3 was released in **Aug 2023**
 
 - Currently it is the most stable version 
+- [View release v1.0.3](https://github.com/gotocva/nilajs/releases/tag/v1.0.3)
 
 :::info
 

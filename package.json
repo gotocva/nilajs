@@ -1,6 +1,6 @@
 {
   "name": "nilajs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "NilaJS a simple and powerfull REST api framework built on top of expressjs",
   "main": "index.js",
   "private": false,
@@ -28,9 +28,5 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "commander": "^9.4.0",
-    "mkdirp": "^3.0.1"
   }
 }
