@@ -10,19 +10,17 @@ const createApp = async (appName) => {
     };
     const CODE_DIR_NAME = 'boilerplate';
     const files = await getFiles(`${__dirname}/${CODE_DIR_NAME}`);
-    files.forEach((file, index) => {
-        if (file.indexOf('node_modules') == -1 && file.indexOf('dist') == -1 && file.indexOf('logs') == -1) {
-            const tgFile = file.substring(file.indexOf(CODE_DIR_NAME+"/") + 12);
+    files.forEach((file) => {
+        const tgFile = file.substring(file.indexOf(CODE_DIR_NAME+"/") + 12);
+        if (tgFile.indexOf('node_modules') == -1 && tgFile.indexOf('dist') == -1 && tgFile.indexOf('logs') == -1) {
             createFileFromSkeleton(`${__dirname}/${CODE_DIR_NAME}/${tgFile}`, `${process.cwd()}/${appName}/${tgFile}`, replacements, appName);
         }
     });
-
     setTimeout(() => {
         console.log('\n');
         console.log(`${LOG_COLORS.GREEN} ${appName} created successfully...`);
         console.log(`${LOG_COLORS.GREEN} cd ${appName} \n npm install \n npm start`)
     }, 5000);
-    
 }
 
 module.exports = {
