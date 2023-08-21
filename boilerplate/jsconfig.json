@@ -5,8 +5,11 @@
         "target": "es2017",
         "allowSyntheticDefaultImports": false,
         "paths": {
+            "@ci/*": ["src/ci/*"],
+            "@cache/*": ["src/cache/*"],
             "@config/*": ["src/config/*"],
             "@controller/*": ["src/controllers/*"],
+            "@exception/*": ["src/exceptions/*"],
             "@middleware/*": ["src/middlewares/*"],
             "@model/*": ["src/models/*"],
             "@route/*": ["src/routes/*"],
