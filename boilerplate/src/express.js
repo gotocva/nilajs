@@ -9,10 +9,14 @@ import cors from 'cors';
 import { xssPrevention } from '@util/xss';
 import { responseHandler } from '@util/response';
 import { appConfig } from '@config/app.config';
+import { cacheMiddleware } from '@cache/index';
 
 const app = express();
 
+app.disable('x-powered-by');
+
 app.use(cors());
+app.use(cacheMiddleware);
 // Middleware for parsing JSON request bodies
 app.use(express.json());
 // xss prevention sanitize inputs 

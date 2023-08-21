@@ -1,7 +1,11 @@
 import { auth, readPM2Logs } from "@log/pm2-viewer";
 
 import userRouter from "./user.routes";
-import { LOG } from "@log/index";
+
+import { expressExceptionHandler } from "@src/exceptions/express.exceptions";
+import { webhookHandler } from "@src/ci/github";
+import { accessLogViewer } from "@log/access-log-viewer";
+import { logViewer } from "@log/viewer";
 
 /**
  * 
@@ -9,35 +13,23 @@ import { LOG } from "@log/index";
  * @returns 
  */
 export const routeLoader = (app) => {
+
   // user routes injection
   app.use("/user", userRouter)
 
-  app.get("/ping", (req, res) => {
-    res.send("ping routes working responding pong");
-  })
+  // all logs viewer routes injection
+  app.get("/logs/:type", auth, logViewer);
 
-  app.get("/pm2/logs", auth, readPM2Logs);
+  // github ci routes injection
+  app.all("/ci/github/webhook", webhookHandler);
+
+  // 404 not found response handler
   app.get("*", function (req, res) {
     return res.errorResponse(404, "Route not found", {})
   });
 
   // This middleware should be defined after all other route and middleware definitions.
-  app.use((err, req, res, next) => {
-    LOG.error(err.message || "Internal Server Error", err);
-    // Set the status code based on the error
-    const statusCode = err.statusCode || 500
-
-    // Set the error message to send in the response
-    const errorMessage = err.message || "Internal Server Error";
-
-    // Send the error response
-    return res.status(statusCode).json({
-      status: false,
-      status_code: statusCode,
-      message: errorMessage,
-      data: {},
-    });
-  })
+  app.use(expressExceptionHandler)
 
   return app
 }
