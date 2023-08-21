@@ -92,14 +92,29 @@ export const _create = (data) => {
  * @created_at Wed Aug 09 2023 17:00:21 GMT+0530 (India Standard Time)
  * @returns 
  */
-export const _list = (query = {}) => {
+export const _list = (query) => {
     return new Promise(async (resolve, reject) => {
         try {
+
             const ignoreColoumns = {
                 // auth_token: false
             }
-            const user = await User.find(query, ignoreColoumns);
-            resolve(user);
+
+            if (query.all && query.all == 'true') {
+                delete query.all;
+                return resolve(await User.find(query, ignoreColoumns));
+            } else {
+                const currentPage = Number(query.current_page) || 1; // The page number you want to retrieve
+                const itemsPerPage = Number(query.items_per_page) || 10; // The number of items per page
+                
+                delete query.current_page; // delete current_page from query
+                delete query.items_per_page; // delete citems_per_page from query
+    
+                const usersCount = await User.countDocuments(query);
+    
+                const user = await User.find(query, ignoreColoumns).skip((currentPage - 1) * itemsPerPage).limit(itemsPerPage);
+                resolve({user, items_per_page: itemsPerPage, current_page: currentPage, total_users: usersCount});
+            }
         } catch (error) {
             reject(error)
         } 

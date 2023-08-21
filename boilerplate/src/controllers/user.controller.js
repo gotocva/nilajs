@@ -1,5 +1,8 @@
 
 import * as User from "@model/user.model";
+import { removeCache } from "@cache/index";
+
+const USER_CACHE = '/user/list';
 
 /**
  * @author sivabharathy
@@ -12,6 +15,8 @@ export const create = async (req, res) => {
     
     await User._create(req.body)
     .then((user) => {
+        // removes user list on cache database 
+        removeCache(USER_CACHE);
         return res.successResponse(200, 'New user created', user);
     })
     .catch((error) => {
@@ -27,14 +32,13 @@ export const create = async (req, res) => {
  * @param {*} res 
  */ 
 export const list = async (req, res) => {
-
-    await User._list(req.body)
+    await User._list(req.query)
     .then((user) => {
         res.successResponse(200, 'User list', user);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    })
+    });
 }
 
 /**
@@ -45,7 +49,6 @@ export const list = async (req, res) => {
  * @param {*} res 
  */ 
 export const getOne = async (req, res) => {
-
     await User._getById(req.params.id)
     .then((user) => {
         if (user) res.successResponse(200, 'User details', user);
@@ -53,7 +56,7 @@ export const getOne = async (req, res) => {
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    })
+    });
 }
 
 /**
@@ -64,15 +67,16 @@ export const getOne = async (req, res) => {
  * @param {*} res 
  */ 
 export const update = async (req, res) => {
-
     await User._update(req.params.id, req.body)
     .then((user) => {
+        // removes user list on cache database 
+        removeCache(USER_CACHE);
         if (user) res.successResponse(200, 'user details updated', user);
         else res.errorResponse(400, 'user not found', []);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    })
+    });
 }
 
 /**
@@ -83,14 +87,15 @@ export const update = async (req, res) => {
  * @param {*} res 
  */ 
 export const deleteOne = async (req, res) => {
-
     await User._delete(req.params.id)
     .then((user) => {
+        // removes user list on cache database 
+        removeCache(USER_CACHE);
         if (user) res.successResponse(200, 'user deleted', user);
         else res.errorResponse(400, 'user not found', []);
     })
     .catch((error) => {
         return res.errorResponse(500,'Exception caught', error);
-    })
+    });
 }
 

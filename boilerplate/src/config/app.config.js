@@ -23,6 +23,8 @@ export const appConfig = {
 
     TELEGRAM_BOT_TOKEN : env.TELEGRAM_BOT_TOKEN || '',
 
+    CACHE: true,
+
     API_RATE_LIMIT_TIME : 15, // 15 minutes
     API_RATE_LIMIT : 100, // 100 requests for every 15 minutes
 
