@@ -1,9 +1,9 @@
 {
     "apps": [
       {
-        "name": "app",
-        "script": "dist/index.js",
-        "instances": 4,
+        "name": "api",
+        "script": "index.js",
+        "instances": 2,
         "autorestart": true,
         "watch": false,
         "time": true,
