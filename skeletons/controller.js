@@ -1,7 +1,7 @@
 
 const sampleController = `
 const { sendSuccessResponse, sendErrorResponse } = require("../../utils/response.handler");
-
+const Log = require('../../utils/logs');
 const {CAPSNAME} = require('./{NAME}.model');
 
 /**
@@ -20,7 +20,7 @@ const store = async (req, res) => {
             return sendErrorResponse(res, { data: {NAME}, message: "Unable to create {CAPSNAME}", statusCode: 400 });
         }
     } catch (error) {
-        console.error('Error:', error);
+        Log.error('Error:', error);
         return sendErrorResponse(res, { error: error });
     }
 }
@@ -41,7 +41,7 @@ const get = async (req, res) => {
             sendErrorResponse(res, { data: {NAME}, message: "{CAPSNAME} not found", statusCode: 400 });
         }
     } catch (error) {
-        console.error('Error:', error);
+        Log.error('Error:', error);
         sendErrorResponse(res, { error: error });
     }
 }
@@ -61,7 +61,7 @@ const list = async (req, res) => {
         const {NAME} = await {CAPSNAME}.paginate({},req.query);
         return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} list retrieved Successfully", statusCode: 200 });
     } catch (error) {
-        console.error('Error:', error);
+        Log.error('Error:', error);
         sendErrorResponse(res, { error: error });
     }
 }
@@ -82,7 +82,7 @@ const remove = async (req, res) => {
             return sendErrorResponse(res, { data: {NAME}, message: "Failed to delete {NAME}", statusCode: 400 });
         }
     } catch (error) {
-        console.error('Error:', error);
+        Log.error('Error:', error);
         return sendErrorResponse(res, { error: error });
     }
 }
@@ -103,7 +103,7 @@ const update = async (req, res) => {
             sendErrorResponse(res, { data: {NAME}, message: "Failed to update {NAME} details", statusCode: 400 });
         }
     } catch (error) {
-        console.error('Error:', error);
+        Log.error('Error:', error);
         sendErrorResponse(res, { error: error });
     }
 }

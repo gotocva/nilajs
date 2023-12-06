@@ -1,6 +1,7 @@
 
 const sampleModel = `
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -16,7 +17,22 @@ const schema = new Schema({
         type: String,
         required: [true, 'name must not be empty'],
     },
+    status: {
+        type: Number,
+        enum:[0, 1],
+        default: 1
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now
+    }
 }, { timestamps: false, versionKey: false });
+
+schema.plugin(mongoosePaginate);
 
 schema.post('init', function(doc) {
     // it is called while accessing the data from DB example: find()
@@ -42,12 +58,24 @@ schema.post('remove', function(doc) {
     // console.log('%s has been removed', doc._id);
 });
 
-schema.methods._list = function(query = {}) {
+schema.pre('findOneAndUpdate', function (next) {
+    this.set({ updated_at: new Date() });
+    next();
+});
+
+schema.pre('updateOne', function (next) {
+    this.set({ updated_at: new Date() });
+    next();
+});
+
+schema.pre('updateMany', function (next) {
+    this.set({ updated_at: new Date() });
+    next();
+});
+
+schema.methods._list = function(query = {}, ignoreColoumns = {}) {
     return new Promise(async (resolve, reject) => {
         try {
-            const ignoreColoumns = {
-                // auth_token: false
-            }
             const {NAME} = await {CAPSNAME}.find(query, ignoreColoumns);
             resolve({NAME});
         } catch (error) {
@@ -56,118 +84,11 @@ schema.methods._list = function(query = {}) {
     });
 }
 
-export const {CAPSNAME} = mongoose.model('{CAPSNAME}', schema);
+const {CAPSNAME} = mongoose.model('{NAME}s', schema);
 
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * 
- * @param {*} data 
- * @returns 
- */
-export const _create = (data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const obj{CAPSNAME} = new {CAPSNAME}(data);
-            const {NAME} = await obj{CAPSNAME}.save();
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    })
-}
+module.exports = {CAPSNAME};
 
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * @returns 
- */
-export const _list = (query = {}) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const ignoreColoumns = {
-                // auth_token: false
-            }
-            const {NAME} = await {CAPSNAME}.find(query, ignoreColoumns);
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    })
-}
-
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * @param {*} _id 
- * @returns 
- */
-export const _getById = (_id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const {NAME} = await {CAPSNAME}.findOne({_id: _id});
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    });
-}
-
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * @param {*} _id 
- * @returns 
- */
-export const _get = (query) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const {NAME} = await {CAPSNAME}.findOne(query);
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    });
-}
-
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * @param {*} _id 
- * @returns 
- */
-export const _update = (_id, data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const {NAME} = await {CAPSNAME}.findByIdAndUpdate(_id, data, { new: true });
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    });
-}
-/**
- * @author Nilajs
- * 
- * @created_at ${ new Date() }
- * @param {*} _id 
- * @returns 
- */
-export const _delete = (_id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const {NAME} = await {CAPSNAME}.findByIdAndDelete(_id).exec();
-            resolve({NAME});
-        } catch (error) {
-            reject(error)
-        } 
-    });
-}`
+`
 
 
 

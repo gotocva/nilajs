@@ -15,6 +15,11 @@ app.use(express.json());
 // Middleware to handle form-urlencoded data
 app.use(express.urlencoded({ extended: true }));
 
+app.set('view engine', 'pug');
+
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
 const auth = basicAuth({
     users: { [env.SWAGGER_USERNAME || 'admin']: env.SWAGGER_PASSWORD || 'admin' },
     challenge: true,
@@ -29,6 +34,11 @@ const swaggerInit = async () => {
     app.use('/api/docs', auth, swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 }
 swaggerInit();
+
+app.get('/', (req, res) => {
+    const users = [{id: 1, name: 'siva'}]
+    res.render('index', { users });
+});
 
 // import module routes 
 const adminRouter = require('../modules/admin/admin.routes');
