@@ -1,22 +1,23 @@
 
 
 const sampleRoutes = `
-import express from "express";
+const express = require('express');
 
 const {NAME}Router = express.Router();
 
-import * as {NAME}Controller from "@controller/{NAME}.controller";
-import { checkObjectId } from "@middleware/objectId.middleware";
+const {NAME}Controller = require('./{NAME}.controller');
+
+const { paramsValidator } = require('../../utils/params-validator');
 
 /**
  * {NAME} api routes
  *
  */
-{NAME}Router.get('/list', [ ],  {NAME}Controller.list);
-{NAME}Router.post('/', [], {NAME}Controller.create);
-{NAME}Router.get('/:id', [checkObjectId],  {NAME}Controller.getOne);
-{NAME}Router.put('/:id', [checkObjectId], {NAME}Controller.update);
-{NAME}Router.delete('/:id', [checkObjectId], {NAME}Controller.deleteOne);
+{NAME}Router.get('/', [ ],  {NAME}Controller.list);
+{NAME}Router.post('/', [], {NAME}Controller.store);
+{NAME}Router.get('/:id', [ paramsValidator ],  {NAME}Controller.get);
+{NAME}Router.put('/:id', [ paramsValidator ], {NAME}Controller.update);
+{NAME}Router.delete('/:id', [ paramsValidator ], {NAME}Controller.remove);
 
 module.exports = {NAME}Router;
 `;
