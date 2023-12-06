@@ -1,100 +1,121 @@
 
 const sampleController = `
-import * as {CAPSNAME} from "@model/{NAME}.model";
+const { sendSuccessResponse, sendErrorResponse } = require("../../utils/response.handler");
+
+const {CAPSNAME} = require('./{NAME}.model');
 
 /**
  * @author Nilajs
  * 
- * @created_at ${ new Date() }
  * @param {*} req 
  * @param {*} res 
- */ 
-export const create = async (req, res) => {
-    
-    await {CAPSNAME}._create(req.body)
-    .then(({NAME}) => {
-        return res.successResponse(200, 'New {NAME} created', {NAME});
-    })
-    .catch((error) => {
-        return res.errorResponse(500,'Exception caught', error);
-    })
+ * @returns 
+ */
+const store = async (req, res) => {
+    try {
+        const {NAME} = await {CAPSNAME}.create(req.body)
+        if ({NAME}) {
+            return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} created Successfully", statusCode: 200 });
+        } else {
+            return sendErrorResponse(res, { data: {NAME}, message: "Unable to create {CAPSNAME}", statusCode: 400 });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return sendErrorResponse(res, { error: error });
+    }
 }
 
 /**
  * @author Nilajs
  * 
- * @created_at ${ new Date() }
  * @param {*} req 
  * @param {*} res 
- */ 
-export const list = async (req, res) => {
-
-    await {CAPSNAME}._list(req.body)
-    .then(({NAME}) => {
-        res.successResponse(200, '{CAPSNAME} list', {NAME});
-    })
-    .catch((error) => {
-        return res.errorResponse(500,'Exception caught', error);
-    })
+ * @returns 
+ */
+const get = async (req, res) => {
+    try {
+        const {NAME} = await {CAPSNAME}.findById(req.params.id);
+        if ({NAME}) {
+            return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} details retrieved Successfully", statusCode: 200 });
+        } else {
+            sendErrorResponse(res, { data: {NAME}, message: "{CAPSNAME} not found", statusCode: 400 });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        sendErrorResponse(res, { error: error });
+    }
 }
 
 /**
  * @author Nilajs
  * 
- * @created_at ${ new Date() }
  * @param {*} req 
  * @param {*} res 
- */ 
-export const getOne = async (req, res) => {
-
-    await {CAPSNAME}._getById(req.params.id)
-    .then(({NAME}) => {
-        if ({NAME}) res.successResponse(200, '{CAPSNAME} details', {NAME});
-        else res.errorResponse(400, '{NAME} not found', []);
-    })
-    .catch((error) => {
-        return res.errorResponse(500,'Exception caught', error);
-    })
+ * @returns 
+ */
+const list = async (req, res) => {
+    try {
+        if (req.query.select) {
+            req.query.select = req.query.select.replace(',', ' '); 
+        }
+        const {NAME} = await {CAPSNAME}.paginate({},req.query);
+        return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} list retrieved Successfully", statusCode: 200 });
+    } catch (error) {
+        console.error('Error:', error);
+        sendErrorResponse(res, { error: error });
+    }
 }
 
 /**
  * @author Nilajs
  * 
- * @created_at ${ new Date() }
  * @param {*} req 
  * @param {*} res 
- */ 
-export const update = async (req, res) => {
-
-    await {CAPSNAME}._update(req.params.id, req.body)
-    .then(({NAME}) => {
-        if ({NAME}) res.successResponse(200, '{NAME} details updated', {NAME});
-        else res.errorResponse(400, '{NAME} not found', []);
-    })
-    .catch((error) => {
-        return res.errorResponse(500,'Exception caught', error);
-    })
+ * @returns 
+ */
+const remove = async (req, res) => {
+    try {
+        const {NAME} = await {CAPSNAME}.findByIdAndDelete(req.params.id)
+        if ({NAME}) {
+            return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} details deleted Successfully", statusCode: 200 });
+        } else {
+            return sendErrorResponse(res, { data: {NAME}, message: "Failed to delete {NAME}", statusCode: 400 });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return sendErrorResponse(res, { error: error });
+    }
 }
 
 /**
  * @author Nilajs
  * 
- * @created_at ${ new Date() }
  * @param {*} req 
  * @param {*} res 
- */ 
-export const deleteOne = async (req, res) => {
-
-    await {CAPSNAME}._delete(req.params.id)
-    .then(({NAME}) => {
-        if ({NAME}) res.successResponse(200, '{NAME} deleted', {NAME});
-        else res.errorResponse(400, '{NAME} not found', []);
-    })
-    .catch((error) => {
-        return res.errorResponse(500,'Exception caught', error);
-    })
+ * @returns 
+ */
+const update = async (req, res) => {
+    try {
+        const {NAME} = await {CAPSNAME}.findByIdAndUpdate(req.params.id, req.body,{new:true})
+        if ({NAME}) {
+            return sendSuccessResponse(res, { data: {NAME}, message: "{CAPSNAME} details updated Successfully", statusCode: 200 });
+        } else {
+            sendErrorResponse(res, { data: {NAME}, message: "Failed to update {NAME} details", statusCode: 400 });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        sendErrorResponse(res, { error: error });
+    }
 }
 
+
+module.exports = {
+    store,
+    get,
+    list,
+    remove,
+    update
+}
 `;
 
 
