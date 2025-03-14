@@ -1,6 +1,6 @@
 {
   "name": "nilajs",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "NilaJS a simple and powerfull REST api framework built on top of expressjs",
   "main": "index.js",
   "private": false,
@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "nila": "index.js"
+    "nilajs": "index.js"
   },
   "homepage": "https://github.com/gotocva/nilajs",
   "issues": "https://github.com/gotocva/nilajs/issues",
