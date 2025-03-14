@@ -1,6 +1,6 @@
 {
   "name": "nilajs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "NilaJS a simple and powerfull REST api framework built on top of expressjs",
   "main": "index.js",
   "private": false,
