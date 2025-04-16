@@ -27,7 +27,9 @@
     "mongoose": "^8.12.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
+    "qrcode": "^1.5.4",
     "socket.io": "^4.8.1",
+    "whatsapp-web.js": "^1.26.0",
     "xss": "^1.0.15"
   },
   "devDependencies": {
